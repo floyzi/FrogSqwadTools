@@ -1,0 +1,270 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6</TargetFramework>
+    <AssemblyName>FrogSqwadDebug</AssemblyName>
+    <Product>My first plugin</Product>
+    <Version>0.0.0</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <RestoreAdditionalProjectSources>
+      https://api.nuget.org/v3/index.json;
+      https://nuget.bepinex.dev/v3/index.json;
+      https://nuget.samboy.dev/v3/index.json
+    </RestoreAdditionalProjectSources>
+    <RootNamespace>FrogSqwadDebug</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="BepInEx.Unity.Mono" Version="6.0.0-be.*" IncludeAssets="compile" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+	<PackageReference Include="UnityEngine.Modules" Version="6000.0.59" IncludeAssets="compile" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Angles">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Angles.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp" Publicize="true">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="Autodesk.Fbx">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Autodesk.Fbx.dll</HintPath>
+    </Reference>
+    <Reference Include="Autodesk.Fbx.BuildTestAssets">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Autodesk.Fbx.BuildTestAssets.dll</HintPath>
+    </Reference>
+    <Reference Include="Boxophobic.PolyverseSkies.Runtime">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Boxophobic.PolyverseSkies.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Boxophobic.PolyverseSkies.Scripts">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Boxophobic.PolyverseSkies.Scripts.dll</HintPath>
+    </Reference>
+    <Reference Include="Boxophobic.Utils.Scripts">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Boxophobic.Utils.Scripts.dll</HintPath>
+    </Reference>
+    <Reference Include="CommandHandlers">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\CommandHandlers.dll</HintPath>
+    </Reference>
+    <Reference Include="Console">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Console.dll</HintPath>
+    </Reference>
+    <Reference Include="darbotron">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\darbotron.dll</HintPath>
+    </Reference>
+    <Reference Include="Discord.Sdk">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Discord.Sdk.dll</HintPath>
+    </Reference>
+    <Reference Include="Facepunch.Steamworks.Win64">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Facepunch.Steamworks.Win64.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusion.Addons.Physics">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Fusion.Addons.Physics.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusion.Common">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Fusion.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusion.Log">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Fusion.Log.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusion.Realtime">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Fusion.Realtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusion.Runtime">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Fusion.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusion.Sockets">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Fusion.Sockets.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusion.Unity">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Fusion.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Lattice.Runtime">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Lattice.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Lattice.Samples.Masking">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Lattice.Samples.Masking.dll</HintPath>
+    </Reference>
+    <Reference Include="LogHistory">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\LogHistory.dll</HintPath>
+    </Reference>
+    <Reference Include="M3D Font Creator - Runtime Only">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\M3D Font Creator - Runtime Only.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Security">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="NanoSockets">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\NanoSockets.dll</HintPath>
+    </Reference>
+    <Reference Include="Photon3Unity3D">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Photon3Unity3D.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonRealtime">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\PhotonRealtime.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonVoice">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\PhotonVoice.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonVoice.API">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\PhotonVoice.API.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonVoice.Fusion">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\PhotonVoice.Fusion.dll</HintPath>
+    </Reference>
+    <Reference Include="PrimeTween.Debug">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\PrimeTween.Debug.dll</HintPath>
+    </Reference>
+    <Reference Include="PrimeTween.Demo">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\PrimeTween.Demo.dll</HintPath>
+    </Reference>
+    <Reference Include="PrimeTween.Runtime">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\PrimeTween.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Sessions">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Sessions.dll</HintPath>
+    </Reference>
+    <Reference Include="Shared">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\System.ComponentModel.Composition.dll</HintPath>
+    </Reference>
+    <Reference Include="System.EnterpriseServices">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\System.EnterpriseServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel.Internals">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\System.ServiceModel.Internals.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.AI.Navigation">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.AI.Navigation.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.Burst.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Unsafe">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.Burst.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Cinemachine">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.Cinemachine.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Collections">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Collections.LowLevel.ILSupport">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.Collections.LowLevel.ILSupport.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Formats.Fbx.Runtime">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.Formats.Fbx.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.InputSystem">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.InputSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.InputSystem.ForUI">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.InputSystem.ForUI.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mathematics">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Multiplayer.Center.Common">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.Multiplayer.Center.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.ProBuilder.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.Csg">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.ProBuilder.Csg.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.KdTree">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.ProBuilder.KdTree.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.Poly2Tri">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.ProBuilder.Poly2Tri.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.Stl">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.ProBuilder.Stl.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Rendering.LightTransport.Runtime">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.Rendering.LightTransport.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipeline.Universal.ShaderLibrary">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Core.Runtime">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Core.Runtime.Shared">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.RenderPipelines.Core.Runtime.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Core.ShaderLibrary">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.GPUDriven.Runtime">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.RenderPipelines.GPUDriven.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Universal.2D.Runtime">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.RenderPipelines.Universal.2D.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Universal.Config.Runtime">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.RenderPipelines.Universal.Config.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Universal.Runtime">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Universal.Shaders">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.RenderPipelines.Universal.Shaders.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Splines">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.Splines.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Timeline">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.Timeline.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.Core">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.VisualScripting.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.Flow">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.VisualScripting.Flow.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.State">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Unity.VisualScripting.State.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIElementsModule">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="Utility">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\Frog Sqwad_Data\Managed\Utility.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="xcopy &quot;$(TargetPath)&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\BepInEx\plugins&quot; /Y " />
+	</Target>
+</Project>
