@@ -2,10 +2,11 @@
 using BepInEx.Logging;
 using BepInEx.Unity.Mono;
 using HarmonyLib;
+using static FrogSqwadTools.AdvancedVersion;
 
-namespace FrogSqwadDebug
+namespace FrogSqwadTools
 {
-    [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+    [BepInPlugin("flz.fs.tools", "Frog Sqwad Tools", "0.0.0")]
     public class Plugin : BaseUnityPlugin
     {
         internal static new ManualLogSource Logger;
@@ -16,16 +17,19 @@ namespace FrogSqwadDebug
         {
             // Plugin startup logic
             Logger = base.Logger;
-            Harmony = new("flz.fs.thing");
+            Harmony = new("flz.fs.tools.harmony");
             Harmony.PatchAll(typeof(HarmonyPatches));
 
-            Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
+            Logger.LogInfo($"Plugin is loaded!");
         }
 
         void Update()
         {
             AdvVer?.SetFPS();
-            AdvVer?.UpdateStyleDisplay(NetworkManager.Instance != null && NetworkManager.Instance.Runner != null && NetworkManager.Instance.Runner.SessionInfo != null ? AdvancedVersion.Style.InGame : AdvancedVersion.Style.Default);
+            AdvVer?.UpdateStyleDisplay(
+                NetworkManager.Instance != null && NetworkManager.Instance.Runner != null && NetworkManager.Instance.Runner.SessionInfo != null ? 
+                Style.InGame : 
+                Style.Default);
         }
 
         void FixedUpdate()

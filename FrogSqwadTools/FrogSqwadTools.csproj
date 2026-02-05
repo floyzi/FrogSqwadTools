@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6</TargetFramework>
-    <AssemblyName>FrogSqwadDebug</AssemblyName>
+    <AssemblyName>FrogSqwadTools</AssemblyName>
     <Product>My first plugin</Product>
     <Version>0.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -12,7 +12,7 @@
       https://nuget.bepinex.dev/v3/index.json;
       https://nuget.samboy.dev/v3/index.json
     </RestoreAdditionalProjectSources>
-    <RootNamespace>FrogSqwadDebug</RootNamespace>
+    <RootNamespace>FrogSqwadTools</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,7 +22,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="BepInEx.Unity.Mono" Version="6.0.0-be.*" IncludeAssets="compile" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
 	<PackageReference Include="UnityEngine.Modules" Version="6000.0.59" IncludeAssets="compile" />
   </ItemGroup>
 
