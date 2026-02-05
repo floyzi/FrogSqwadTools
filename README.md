@@ -1,1 +1,2 @@
-# FrogSqwadDebug
+# FrogSqwadTools
+A mod (probably)
