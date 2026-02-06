@@ -28,17 +28,19 @@ namespace FrogSqwadTools
             var sb = new StringBuilder();
 
             sb.AppendLine("Frog Sqwad V{0}");
+            sb.AppendLine("Frog Sqwad Tools V{1} (#{2})");
             sb.AppendLine();
-            sb.AppendLine("FPS: {1}");
-            sb.AppendLine("RTT: {2} | Region: {3}");
+            sb.AppendLine("FPS: {3}");
+            sb.AppendLine("RTT: {4} | Region: {5}");
 
             InGameFormatString = sb.ToString();
 
             sb.Clear();
 
             sb.AppendLine("Frog Sqwad V{0}");
+            sb.AppendLine("Frog Sqwad Tools V{1} (#{2})");
             sb.AppendLine();
-            sb.AppendLine("FPS: {1}");
+            sb.AppendLine("FPS: {3}");
 
             DefaultFormatString = sb.ToString();
 
@@ -61,11 +63,11 @@ namespace FrogSqwadTools
             switch (CurrentStyle)
             {
                 case Style.Default:
-                    Text.SetText(string.Format(DefaultFormatString, Application.version, FPS));
+                    Text.SetText(string.Format(DefaultFormatString, Application.version, Plugin.BuildDetails.Version, Plugin.BuildDetails.CommitShort, FPS).Trim());
                     break;
                 case Style.InGame:
                     var conn = NetworkManager.Instance.Runner;
-                    Text.SetText(string.Format(InGameFormatString, Application.version, FPS, 
+                    Text.SetText(string.Format(InGameFormatString, Application.version, Plugin.BuildDetails.Version, Plugin.BuildDetails.CommitShort, FPS, 
                         conn.IsServer ? 
                         "HOST" : 
                             NetworkManager.Instance.LocalPlayer != null ? 
@@ -73,7 +75,7 @@ namespace FrogSqwadTools
                             "?", 
                         string.IsNullOrEmpty(conn.SessionInfo.Region) ? 
                         "?" : 
-                        conn.SessionInfo.Region));
+                        conn.SessionInfo.Region).Trim());
                     break;
             }
         }
