@@ -49,10 +49,29 @@ namespace FrogSqwadTools
             lbBtn.GetComponent<CustomButton>().onClick.AddListener(() => Plugin.Instance.LobbyManager.ToggleList(true));
         }
 
+
         [HarmonyPatch(typeof(LevelLoader), nameof(LevelLoader.LoadMainMenu)), HarmonyPostfix]
         static void LoadMainMenu(LevelLoader __instance)
         {
             Plugin.Instance.LobbyManager.CloseLobbyIfNeeded();
+        }
+
+        [HarmonyPatch(typeof(NetworkManager), nameof(NetworkManager.OnPlayerJoined)), HarmonyPostfix]
+        static void OnPlayerJoined(NetworkManager __instance)
+        {
+            Plugin.Instance.LobbyManager.UpdateLobbyInfo();
+        }
+
+        [HarmonyPatch(typeof(NetworkManager), nameof(NetworkManager.OnPlayerLeft)), HarmonyPostfix]
+        static void OnPlayerLeft(NetworkManager __instance)
+        {
+            Plugin.Instance.LobbyManager.UpdateLobbyInfo();
+        }
+
+        [HarmonyPatch(typeof(GameManager), nameof(GameManager.ChangeState)), HarmonyPostfix]
+        static void ChangeState(GameManager __instance)
+        {
+            Plugin.Instance.LobbyManager.UpdateLobbyInfo();
         }
     }
 }

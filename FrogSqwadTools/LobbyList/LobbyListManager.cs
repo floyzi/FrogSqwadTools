@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static FS_LobbyList_Protocol.LobbyUpdateRequest;
 using static LobbyManager;
 using static UnityEngine.UI.GridLayoutGroup;
 
@@ -72,7 +73,11 @@ namespace FrogSqwadTools.LobbyList
                 TokenSource = new();
                 ConnectionFailedTxt.gameObject.SetActive(true);
 
-                await ListSocket.ConnectAsync(new("ws://127.0.0.1:10002/ws"), TokenSource.Token);
+#if !LOCALHOST
+                await ListSocket.ConnectAsync(new("ws://85.192.49.206:10090/ws"), TokenSource.Token);
+#else
+                await ListSocket.ConnectAsync(new("ws://127.0.0.1:10090/ws"), TokenSource.Token);
+#endif
 
                 if (ListSocket.State == WebSocketState.Open)
                 {
@@ -206,12 +211,16 @@ namespace FrogSqwadTools.LobbyList
         {
             LobbyDay = evt.CurrentDay;
             Lives = evt.Lives;
+
+            UpdateLobbyInfo();
         }
 
         internal void ToggleLobbyState(CustomButton owner)
         {
             var netMan = NetworkManager.Instance;
             if (!netMan.Runner.IsServer) return;
+
+            IsOwnedLobbyVisible = !IsOwnedLobbyVisible;
 
             CurrentlyIn = new()
             {
@@ -223,11 +232,9 @@ namespace FrogSqwadTools.LobbyList
                 Code = netMan.SessionNameWithRegion,
             };
 
-            IsOwnedLobbyVisible = !IsOwnedLobbyVisible;
-
             _ = Send(new(Message.MessageType.LobbyOperationRequest, Message.OperationType.Request, new LobbyUpdateRequest
             {
-               State = IsOwnedLobbyVisible ? LobbyUpdateRequest.LobbyState.ShowInList : LobbyUpdateRequest.LobbyState.HideFromList,
+               State = IsOwnedLobbyVisible ? LobbyState.ShowInList : LobbyState.HideFromList,
                Lobby = CurrentlyIn
             }), new(x =>
             {
@@ -254,6 +261,22 @@ namespace FrogSqwadTools.LobbyList
             {
                 State = LobbyUpdateRequest.LobbyState.HideFromList,
                 Lobby = null
+            }));
+        }
+
+        internal void UpdateLobbyInfo()
+        {
+            if (NetworkManager.Instance == null || NetworkManager.Instance.Runner == null || !NetworkManager.Instance.Runner.IsServer) return;
+            if (CurrentlyIn == null) return;
+
+            CurrentlyIn.Day = LobbyDay;
+            CurrentlyIn.Players = NetworkManager.Instance.Runner.ActivePlayers.Count();
+            CurrentlyIn.LobbyState = GameManager.Instance.CurrentState != GameManager.State.Level ? LobbyInfo.State.Filling : LobbyInfo.State.Playing;
+
+            _ = Send(new(Message.MessageType.LobbyOperationRequest, Message.OperationType.Request, new LobbyUpdateRequest
+            {
+                State = LobbyUpdateRequest.LobbyState.UpdateDetails,
+                Lobby = CurrentlyIn
             }));
         }
     }

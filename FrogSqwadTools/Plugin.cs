@@ -10,9 +10,11 @@ using static FrogSqwadTools.AdvancedVersion;
 
 namespace FrogSqwadTools
 {
-    [BepInPlugin("flz.fs.tools", "Frog Sqwad Tools", "0.0.0")]
+    [BepInPlugin("flz.fs.tools", "Frog Sqwad Tools", Version)]
     public class Plugin : BaseUnityPlugin
     {
+        internal const string Version = "0.1.0";
+
         internal static Plugin Instance { get; private set; }
         internal static new ManualLogSource Logger;
         internal Harmony Harmony;
