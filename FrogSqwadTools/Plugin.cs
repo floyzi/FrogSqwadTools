@@ -18,6 +18,8 @@ namespace FrogSqwadTools
     public class Plugin : BaseUnityPlugin
     {
         internal const string Version = "0.1.0";
+        internal const string ExpectedProtocol = "0.0.0.1";
+
         internal readonly struct BuildInfo
         {
             public readonly string Version;
@@ -45,9 +47,9 @@ namespace FrogSqwadTools
         internal static new ManualLogSource Logger;
         internal Harmony Harmony;
         internal AdvancedVersion AdvVer;
-        static AssetBundle LobbyBundle;
         internal LobbyListManager LobbyManager;
         internal static BuildInfo BuildDetails;
+        internal static string ModDir = Path.Combine(Paths.PluginPath, "FrogSqwadTools");
 
         private void Awake()
         {
@@ -65,17 +67,38 @@ namespace FrogSqwadTools
 
             BuildDetails = new BuildInfo(Version, commit.Length > 1 ? commit[1] : "...", buildDate, cfg);
 
+            var protocolPath = Path.Combine(ModDir, "FS_LobbyList_Protocol.dll");
+            if (!File.Exists(protocolPath))
+            {
+                Logger.LogError("Unable to find protocol file at path\n" + protocolPath);
+                Application.Quit();
+                return;
+            }
+
+            var verInfo = FileVersionInfo.GetVersionInfo(protocolPath);
+            if (verInfo.ProductVersion != ExpectedProtocol)
+                Logger.LogWarning("Incorrect protocol version\n" + verInfo.ProductVersion);
+
             Harmony = new("flz.fs.tools.harmony");
             Harmony.PatchAll(typeof(HarmonyPatches));
 
-            LobbyBundle = AssetBundle.LoadFromFile(Path.Combine(Paths.PluginPath, "frog_sqwad_lobbylist"));
-            LobbyManager = new(LobbyBundle.LoadAsset<GameObject>("LobbyListPrefab"), LobbyBundle.LoadAsset<GameObject>("LobbyListLobby"));
+            var bundlePath = Path.Combine(ModDir, "frog_sqwad_lobbylist");
+            if (!File.Exists(bundlePath))
+            {
+                Logger.LogError("Unable to find bundle file at path\n" + bundlePath);
+                Application.Quit();
+                return;
+            }
+
+            var menusBundle = AssetBundle.LoadFromFile(bundlePath);
+            LobbyManager = new(menusBundle.LoadAsset<GameObject>("LobbyListPrefab"), menusBundle.LoadAsset<GameObject>("LobbyListLobby"));
+
+            menusBundle.Unload(false);
 
             Logger.LogInfo($"");
             Logger.LogInfo($"---");
             Logger.LogInfo($"Frog Sqwad Tools (REAL Tools) v{BuildDetails.Version}");
             Logger.LogInfo($"Build Date: {BuildDetails.BuildDate} | Commit: #{BuildDetails.GetCommit(12)}");
-            Logger.LogInfo($"");
             Logger.LogInfo($"---");
             Logger.LogInfo($"");
         }

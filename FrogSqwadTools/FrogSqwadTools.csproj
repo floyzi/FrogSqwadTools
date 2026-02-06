@@ -272,6 +272,6 @@
   </ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="xcopy &quot;$(TargetPath)&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\BepInEx\plugins&quot; /Y " />
+		<Exec Command="xcopy &quot;$(TargetPath)&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Frog Sqwad Playtest\BepInEx\plugins\FrogSqwadTools&quot; /Y " />
 	</Target>
 </Project>

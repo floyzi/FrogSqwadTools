@@ -3,6 +3,7 @@ using FrogSqwad.UI;
 using FS_LobbyList_Protocol;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace FrogSqwadTools.LobbyList
         readonly List<GameObject> CurrentLobbies;
         readonly Text NoLobbiesTxt;
         readonly Text ConnectionFailedTxt;
+        readonly Text LoadingTxt;
         readonly Button RefreshListBtn;
 
         ClientWebSocket ListSocket;
@@ -66,12 +68,17 @@ namespace FrogSqwadTools.LobbyList
             var allTxts = CurrentListMenu.transform.GetComponentsInChildren<Text>(true);
             NoLobbiesTxt = allTxts.FirstOrDefault(x => x.name == "NoLobbiesTxt");
             ConnectionFailedTxt = allTxts.FirstOrDefault(x => x.name == "ConnectFailedTxt");
+            LoadingTxt = allTxts.FirstOrDefault(x => x.name == "LoadingTxt");
 
             Task.Run(async () =>
             {
                 ListSocket = new();
                 TokenSource = new();
+
                 ConnectionFailedTxt.gameObject.SetActive(true);
+
+                ListSocket.Options.SetRequestHeader("app-ver", Application.version);
+                ListSocket.Options.SetRequestHeader("mod-ver", Plugin.BuildDetails.Version);
 
 #if !LOCALHOST
                 await ListSocket.ConnectAsync(new("ws://85.192.49.206:10090/ws"), TokenSource.Token);
@@ -148,10 +155,6 @@ namespace FrogSqwadTools.LobbyList
 
         internal void RefreshList(List<LobbyInfo> upcoming)
         {
-            foreach (var item in CurrentLobbies)
-                GameObject.Destroy(item.gameObject);
-
-            CurrentLobbies.Clear();
             NoLobbiesTxt.gameObject.SetActive(upcoming == null || upcoming.Count == 0);
 
             foreach (var item in upcoming)
@@ -192,6 +195,13 @@ namespace FrogSqwadTools.LobbyList
         {
             RefreshListBtn.interactable = false;
 
+            foreach (var item in CurrentLobbies)
+                GameObject.Destroy(item.gameObject);
+
+            CurrentLobbies.Clear();
+
+            LoadingTxt.gameObject.SetActive(true);
+
             _ = Send(new(Message.MessageType.RefreshRequest, Message.OperationType.Request, null), new(res =>
             {
                 RefreshListBtn.interactable = true;
@@ -200,6 +210,7 @@ namespace FrogSqwadTools.LobbyList
 
                 var listArray = (JArray)res.Payload;
                 RefreshList(listArray.ToObject<List<LobbyInfo>>());
+                LoadingTxt.gameObject.SetActive(false);
                 if (!silent) SFXSystem.Instance.PlayUI(SFXType.UIConfirm);
             }), new(() =>
             {
@@ -228,7 +239,7 @@ namespace FrogSqwadTools.LobbyList
                 Version = Application.version,
                 LobbyState = GameManager.Instance.CurrentState != GameManager.State.Level ? LobbyInfo.State.Filling : LobbyInfo.State.Playing,
                 Players = netMan.Runner.ActivePlayers.Count(),
-                Name = $"TODO's Lobby",
+                Name = $"{SteamClient.Name}'s Lobby",
                 Code = netMan.SessionNameWithRegion,
             };
 
