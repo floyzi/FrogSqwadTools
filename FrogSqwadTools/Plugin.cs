@@ -1,7 +1,11 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.Mono;
+using FrogSqwadTools.LobbyList;
 using HarmonyLib;
+using System.IO;
+using Unity.VisualScripting;
+using UnityEngine;
 using static FrogSqwadTools.AdvancedVersion;
 
 namespace FrogSqwadTools
@@ -9,16 +13,22 @@ namespace FrogSqwadTools
     [BepInPlugin("flz.fs.tools", "Frog Sqwad Tools", "0.0.0")]
     public class Plugin : BaseUnityPlugin
     {
+        internal static Plugin Instance { get; private set; }
         internal static new ManualLogSource Logger;
-        internal static Harmony Harmony;
-        internal static AdvancedVersion AdvVer;
+        internal Harmony Harmony;
+        internal AdvancedVersion AdvVer;
+        static AssetBundle LobbyBundle;
+        internal LobbyListManager LobbyManager;
 
         private void Awake()
         {
-            // Plugin startup logic
+            Instance = this;
             Logger = base.Logger;
             Harmony = new("flz.fs.tools.harmony");
             Harmony.PatchAll(typeof(HarmonyPatches));
+
+            LobbyBundle = AssetBundle.LoadFromFile(Path.Combine(Paths.PluginPath, "frog_sqwad_lobbylist"));
+            LobbyManager = new(LobbyBundle.LoadAsset<GameObject>("LobbyListPrefab"), LobbyBundle.LoadAsset<GameObject>("LobbyListLobby"));
 
             Logger.LogInfo($"Plugin is loaded!");
         }
