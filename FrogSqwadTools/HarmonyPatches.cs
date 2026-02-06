@@ -20,18 +20,27 @@ namespace FrogSqwadTools
             Plugin.Instance.AdvVer = new(__instance);
         }
 
-        [HarmonyPatch(typeof(PauseMenu), nameof(PauseMenu.Start)), HarmonyPostfix]
-        static void Start(PauseMenu __instance)
+        [HarmonyPatch(typeof(PauseMenu), nameof(PauseMenu.OpenMenu)), HarmonyPostfix]
+        static void OpenMenu(PauseMenu __instance)
         {
+            if (__instance._showLobbyCodeButton.name == "Init") return; //what am i even doing man
+
+            __instance._showLobbyCodeButton.name = "Init";
             __instance._showLobbyCodeButton.GetComponentInChildren<TextMeshProUGUI>().SetText("Show & Copy Lobby Code");
 
-            var lobbyToggleBtn = GameObject.Instantiate(__instance._showLobbyCodeButton.gameObject, __instance._showLobbyCodeButton.transform.GetParent());
-            lobbyToggleBtn.GetComponentInChildren<TextMeshProUGUI>().SetText("Show My Lobby In List");
-            var btn = lobbyToggleBtn.GetComponent<CustomButton>();
-            btn.onClick.AddListener(() =>
+            if (NetworkManager.Instance.Runner.IsServer)
             {
-                Plugin.Instance.LobbyManager.ToggleLobbyState(btn);
-            });
+                var lobbyToggleBtn = GameObject.Instantiate(__instance._showLobbyCodeButton.gameObject, __instance._showLobbyCodeButton.transform.GetParent());
+                lobbyToggleBtn.GetComponentInChildren<TextMeshProUGUI>().SetText("Show My Lobby In List");
+                lobbyToggleBtn.transform.SetSiblingIndex(lobbyToggleBtn.transform.GetSiblingIndex() -  1);
+                var btn = lobbyToggleBtn.GetComponent<CustomButton>();
+                btn.onClick.AddListener(() =>
+                {
+                    Plugin.Instance.LobbyManager.ToggleLobbyState(btn);
+                });
+
+                __instance._showLobbyCodeButton.transform.GetParent().transform.localPosition += new Vector3(0, 80, 0); 
+            }
         }
 
         [HarmonyPatch(typeof(PauseMenu), nameof(PauseMenu.OnShowLobbyCodePressed)), HarmonyPostfix]
