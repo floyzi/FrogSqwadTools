@@ -27,16 +27,17 @@ namespace FrogSqwadTools
 
             var lobbyToggleBtn = GameObject.Instantiate(__instance._showLobbyCodeButton.gameObject, __instance._showLobbyCodeButton.transform.GetParent());
             lobbyToggleBtn.GetComponentInChildren<TextMeshProUGUI>().SetText("Show My Lobby In List");
-            lobbyToggleBtn.GetComponent<CustomButton>().onClick.AddListener(() => 
+            var btn = lobbyToggleBtn.GetComponent<CustomButton>();
+            btn.onClick.AddListener(() =>
             {
-            
+                Plugin.Instance.LobbyManager.ToggleLobbyState(btn);
             });
         }
 
         [HarmonyPatch(typeof(PauseMenu), nameof(PauseMenu.OnShowLobbyCodePressed)), HarmonyPostfix]
         static void OnShowLobbyCodePressed(PauseMenu __instance)
         {
-            GUIUtility.systemCopyBuffer = NetworkManager.Instance.SessionNameWithRegion; 
+            GUIUtility.systemCopyBuffer = NetworkManager.Instance.SessionNameWithRegion;
         }
 
         [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
@@ -46,6 +47,12 @@ namespace FrogSqwadTools
             lbBtn.transform.SetSiblingIndex(2);
             lbBtn.GetComponentInChildren<TextMeshProUGUI>().SetText("Lobby List");
             lbBtn.GetComponent<CustomButton>().onClick.AddListener(() => Plugin.Instance.LobbyManager.ToggleList(true));
+        }
+
+        [HarmonyPatch(typeof(LevelLoader), nameof(LevelLoader.LoadMainMenu)), HarmonyPostfix]
+        static void LoadMainMenu(LevelLoader __instance)
+        {
+            Plugin.Instance.LobbyManager.CloseLobbyIfNeeded();
         }
     }
 }

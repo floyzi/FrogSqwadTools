@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static LobbyManager;
+using static UnityEngine.UI.GridLayoutGroup;
 
 namespace FrogSqwadTools.LobbyList
 {
@@ -31,6 +33,10 @@ namespace FrogSqwadTools.LobbyList
         CancellationTokenSource TokenSource;
         readonly Dictionary<Guid, TaskCompletionSource<Message>> PendingResponses = [];
         readonly TimeSpan Timeout = TimeSpan.FromSeconds(5);
+        LobbyInfo CurrentlyIn;
+        int LobbyDay;
+        int Lives;
+        bool IsOwnedLobbyVisible;
 
         internal LobbyListManager(GameObject listPrefab, GameObject item)
         {
@@ -81,6 +87,8 @@ namespace FrogSqwadTools.LobbyList
                     Plugin.Logger.LogInfo("Failed to connect to lobby list");
                 }
             });
+
+            EventSystem.Instance.Register<LobbyUpdateEvent>(OnLobbyInfoReceived);
         }
 
         async Task Receive()
@@ -121,7 +129,7 @@ namespace FrogSqwadTools.LobbyList
             var newLobby = GameObject.Instantiate(LobbyPrefab, CurrentListMenu.GetComponentInChildren<ScrollRect>().content);
 
             newLobby.name = lobby.Name;
-            newLobby.GetComponentInChildren<Text>().text = $"{lobby.Name} | {lobby.Code} | {lobby.Version} | {lobby.LobbyState} | {lobby.Version} / 102 | {lobby.Day}";
+            newLobby.GetComponentInChildren<Text>().text = $"{lobby.Name} - {lobby.Code} - {lobby.LobbyState} | v{lobby.Version} - {lobby.Players}/8 | Day: {lobby.Day}";
             newLobby.GetComponentInChildren<Button>().onClick.AddListener(() =>
             {
                 var mmm = Resources.FindObjectsOfTypeAll<MainMenuManager>().FirstOrDefault();
@@ -191,6 +199,61 @@ namespace FrogSqwadTools.LobbyList
             }), new(() =>
             {
                 RefreshListBtn.interactable = true;
+            }));
+        }
+
+        void OnLobbyInfoReceived(LobbyUpdateEvent evt)
+        {
+            LobbyDay = evt.CurrentDay;
+            Lives = evt.Lives;
+        }
+
+        internal void ToggleLobbyState(CustomButton owner)
+        {
+            var netMan = NetworkManager.Instance;
+            if (!netMan.Runner.IsServer) return;
+
+            CurrentlyIn = new()
+            {
+                Day = LobbyDay,
+                Version = Application.version,
+                LobbyState = GameManager.Instance.CurrentState != GameManager.State.Level ? LobbyInfo.State.Filling : LobbyInfo.State.Playing,
+                Players = netMan.Runner.ActivePlayers.Count(),
+                Name = $"TODO's Lobby",
+                Code = netMan.SessionNameWithRegion,
+            };
+
+            IsOwnedLobbyVisible = !IsOwnedLobbyVisible;
+
+            _ = Send(new(Message.MessageType.LobbyOperationRequest, Message.OperationType.Request, new LobbyUpdateRequest
+            {
+               State = IsOwnedLobbyVisible ? LobbyUpdateRequest.LobbyState.ShowInList : LobbyUpdateRequest.LobbyState.HideFromList,
+               Lobby = CurrentlyIn
+            }), new(x =>
+            {
+                if (x.Type != Message.MessageType.LobbyOperationResult) return;
+                
+                if (IsOwnedLobbyVisible)
+                    owner.GetComponentInChildren<TextMeshProUGUI>().SetText("Hide My Lobby In List");
+                else
+                    owner.GetComponentInChildren<TextMeshProUGUI>().SetText("Show My Lobby In List");
+            }), new(() =>
+            {
+                IsOwnedLobbyVisible = false;
+            }));
+        }
+
+        internal void CloseLobbyIfNeeded()
+        {
+            IsOwnedLobbyVisible = false;
+
+            if (CurrentlyIn == null) return;
+
+            CurrentlyIn = null;
+            _ = Send(new(Message.MessageType.LobbyOperationRequest, Message.OperationType.Request, new LobbyUpdateRequest
+            {
+                State = LobbyUpdateRequest.LobbyState.HideFromList,
+                Lobby = null
             }));
         }
     }
