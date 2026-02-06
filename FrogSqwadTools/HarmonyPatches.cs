@@ -24,6 +24,13 @@ namespace FrogSqwadTools
         static void Start(PauseMenu __instance)
         {
             __instance._showLobbyCodeButton.GetComponentInChildren<TextMeshProUGUI>().SetText("Show & Copy Lobby Code");
+
+            var lobbyToggleBtn = GameObject.Instantiate(__instance._showLobbyCodeButton.gameObject, __instance._showLobbyCodeButton.transform.GetParent());
+            lobbyToggleBtn.GetComponentInChildren<TextMeshProUGUI>().SetText("Show My Lobby In List");
+            lobbyToggleBtn.GetComponent<CustomButton>().onClick.AddListener(() => 
+            {
+            
+            });
         }
 
         [HarmonyPatch(typeof(PauseMenu), nameof(PauseMenu.OnShowLobbyCodePressed)), HarmonyPostfix]
@@ -38,7 +45,7 @@ namespace FrogSqwadTools
             var lbBtn = GameObject.Instantiate(__instance._hostButton.gameObject, __instance._hostButton.transform.GetParent());
             lbBtn.transform.SetSiblingIndex(2);
             lbBtn.GetComponentInChildren<TextMeshProUGUI>().SetText("Lobby List");
-            lbBtn.GetComponent<CustomButton>().onClick.AddListener(Plugin.Instance.LobbyManager.ShowList);
+            lbBtn.GetComponent<CustomButton>().onClick.AddListener(() => Plugin.Instance.LobbyManager.ToggleList(true));
         }
     }
 }
