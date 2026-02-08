@@ -5,19 +5,16 @@ using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using static UnityEngine.UI.GridLayoutGroup;
 
 namespace FrogSqwadTools.LobbyList
 {
     internal class PhotonLobbyList : INetworkRunnerCallbacks
     {
-        internal static Action OnConnectBegin;
-        internal static Action<bool, string> OnConnectEnd;
+        internal static event Action OnConnectBegin;
+        internal static event Action<bool, string> OnConnectEnd;
 
         NetworkRunner Runner;
         GlobalListTab Owner;
@@ -40,7 +37,7 @@ namespace FrogSqwadTools.LobbyList
             if (!_canConnect) return;
 
             var hasRegion = !string.IsNullOrEmpty(region);
-            Plugin.Logger.LogInfo(string.Format("Connecting to photon lobby on region \"{0}\"...", hasRegion ? region : "Auto"));
+            Plugin.Logger.LogInfo(string.Format("Connecting to photon lobby on region \"{0}\"...", hasRegion ? region : "auto"));
             OnConnectBegin?.Invoke();
 
             try
@@ -50,10 +47,7 @@ namespace FrogSqwadTools.LobbyList
 
                 if (Runner != null)
                 {
-                    await Runner.Shutdown();
-                    GameObject.Destroy(Runner);
-                    Runner = null;
-
+                    await TerminateConnection();
                     await Task.Yield();
                 }
 
@@ -62,9 +56,11 @@ namespace FrogSqwadTools.LobbyList
                 Runner = lbr.AddComponent<NetworkRunner>();
                 Runner.AddCallbacks(this);
 
+                var regs = await NetworkRunner.GetAvailableRegions();
+                NetworkManager.Instance._allRegions = regs;
+
                 if (!hasRegion)
                 {
-                    var regs = await NetworkRunner.GetAvailableRegions();
                     var bestReg = regs.Where(r => r.RegionPing > 0).OrderBy(r => r.RegionPing).FirstOrDefault();
                     Plugin.Logger.LogInfo($"Best region to connect is \"{bestReg.RegionCode}\" with {bestReg.RegionPing}ms ping");
                     region = bestReg.RegionCode;
@@ -92,6 +88,13 @@ namespace FrogSqwadTools.LobbyList
                 _canConnect = true;
                 LobbyListManager.Instance.RegionDropdown.interactable = true;
             }
+        }
+
+        internal async Task TerminateConnection()
+        {
+            await Runner.Shutdown();
+            GameObject.Destroy(Runner);
+            Runner = null;
         }
 
         public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) => Owner.UpdateList(sessionList);

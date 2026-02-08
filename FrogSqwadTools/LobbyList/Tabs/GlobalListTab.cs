@@ -26,14 +26,14 @@ namespace FrogSqwadTools.LobbyList.Tabs
 
             _ = LobbyList.Init(this);
 
-            PhotonLobbyList.OnConnectBegin = new(() =>
+            PhotonLobbyList.OnConnectBegin += new(() =>
             {
                 ConnectionFailedTxt.gameObject.SetActive(false);
                 NoLobbiesTxt.gameObject.SetActive(false);
                 LoadingTxt.gameObject.SetActive(true);
             });
 
-            PhotonLobbyList.OnConnectEnd = new((success, region) =>
+            PhotonLobbyList.OnConnectEnd += new((success, region) =>
             {
                 _hasSeenLobbiesBefore = false;
                 _pendingLobbies?.Clear();

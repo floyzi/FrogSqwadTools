@@ -1,6 +1,7 @@
 ﻿using FrogSqwad.SFX;
 using FrogSqwadTools.LobbyList.Core;
 using FrogSqwadTools.LobbyList.Tabs;
+using Fusion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,7 @@ namespace FrogSqwadTools.LobbyList
 
         readonly Text StatsText;
         readonly Text TitleText;
+        readonly Text RegionInfoText;
 
         internal PhotonRegionsLookup KnownRegions;
         internal LobbyListManager(GameObject listPrefab, GameObject item, GameObject regionDropdown)
@@ -56,41 +58,42 @@ namespace FrogSqwadTools.LobbyList
             allBtns.FirstOrDefault(x => x.name == "PrevTab").onClick.AddListener(() =>
             {
                 SFXSystem.Instance.PlayUI(SFXType.UIClick);
-                PreviousTab();
+                var prev = (ListTabs.IndexOf(CurrentTab) - 1 + ListTabs.Count) % ListTabs.Count;
+                SetTabAtIndex(prev);
             });
 
             allBtns.FirstOrDefault(x => x.name == "NextTab").onClick.AddListener(() =>
             {
                 SFXSystem.Instance.PlayUI(SFXType.UIClick);
-                NextTab();
+                var next = (ListTabs.IndexOf(CurrentTab) + 1) % ListTabs.Count;
+                SetTabAtIndex(next);
             });
 
             var allTxts = CurrentListMenu.transform.GetComponentsInChildren<Text>();
 
             StatsText = allTxts.FirstOrDefault(x => x.name == "Stats");
             TitleText = allTxts.FirstOrDefault(x => x.name == "ListTitle");
+            RegionInfoText = allTxts.FirstOrDefault(x => x.name == "RegionInfo");
 
             var allLists = CurrentListMenu.transform.GetComponentsInChildren<ScrollRect>();
             ListTabs = [];
 
             ListTabs.Add(new GlobalListTab("Global", allLists.FirstOrDefault(x => x.name == "GlobalList"), refrBtn, item));
-            ListTabs.Add(new CustomListTab("Custom", allLists.FirstOrDefault(x => x.name == "CustomList"), refrBtn, item));
+            //ListTabs.Add(new CustomListTab("Custom", allLists.FirstOrDefault(x => x.name == "CustomList"), refrBtn, item));
 
             SetTabAtIndex(0);
+
+            RegionInfoText.text = "???";
+            PhotonLobbyList.OnConnectEnd += new((success, region) =>
+            {
+                if (string.IsNullOrEmpty(region))
+                    RegionInfoText.text = $"... i don't know :(";
+                else
+                    RegionInfoText.text = $"{region}: AVG ping ~{NetworkManager.Instance._allRegions.FirstOrDefault(x => x.RegionCode == region).RegionPing}ms";
+            });
         }
 
         internal void ToggleList(bool state) => CurrentListMenu.SetActive(state);
-
-        internal void NextTab()
-        {
-            var next = (ListTabs.IndexOf(CurrentTab) + 1) % ListTabs.Count;
-            SetTabAtIndex(next);
-        }
-        internal void PreviousTab()
-        {
-            var prev = (ListTabs.IndexOf(CurrentTab) - 1 + ListTabs.Count) % ListTabs.Count;
-            SetTabAtIndex(prev);
-        }
 
         void SetTabAtIndex(int indx)
         {
@@ -103,7 +106,7 @@ namespace FrogSqwadTools.LobbyList
 
         internal void SetStats(int lobbyCount, int newLobbies)
         {
-            StatsText.text = $"Lobbies in list: {lobbyCount} | New lobbies: {newLobbies}";
+            StatsText.text = $"TOTAL: {lobbyCount} | NEW: {newLobbies}";
         }
 
         internal void InitRegionDropdown(GameObject dropdownObj)
@@ -123,8 +126,7 @@ namespace FrogSqwadTools.LobbyList
             RegionDropdown.onValueChanged.AddListener(x =>
             {
                 string goWith = null;
-                if (x != 0)
-                    goWith = KnownRegions.Regions[x - 1].Code;
+                if (x != 0) goWith = KnownRegions.Regions[x - 1].Code;
 
                 _ = GetListTab<GlobalListTab>().LobbyList.BeginConnect(goWith);
             });
