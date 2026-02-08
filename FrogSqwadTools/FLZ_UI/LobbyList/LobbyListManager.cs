@@ -45,33 +45,28 @@ namespace FrogSqwadTools.FLZ_UI.LobbyList
 
             HideListBtn.onClick.AddListener(() =>
             {
-                SFXSystem.Instance.PlayUI(SFXType.UIClick);
                 ElementInstance.gameObject.SetActive(false);
             });
 
             RefreshListBtn.onClick.AddListener(() =>
             {
-                SFXSystem.Instance.PlayUI(SFXType.UIClick);
                 CurrentTab.RefreshRequest(false);
             });
 
             PrevTabBtn.onClick.AddListener(() =>
             {
-                SFXSystem.Instance.PlayUI(SFXType.UIClick);
                 var prev = (ListTabs.IndexOf(CurrentTab) - 1 + ListTabs.Count) % ListTabs.Count;
                 SetTabAtIndex(prev);
             });
 
             NextTabBtn.onClick.AddListener(() =>
             {
-                SFXSystem.Instance.PlayUI(SFXType.UIClick);
                 var next = (ListTabs.IndexOf(CurrentTab) + 1) % ListTabs.Count;
                 SetTabAtIndex(next);
             });
 
             JoinRandomBtn.onClick.AddListener(() =>
             {
-                SFXSystem.Instance.PlayUI(SFXType.UIClick);
                 CurrentTab.JoinRandom();
             });
 
@@ -89,7 +84,10 @@ namespace FrogSqwadTools.FLZ_UI.LobbyList
                 if (string.IsNullOrEmpty(region))
                     RegionInfoText.text = $"... i don't know :(";
                 else
-                    RegionInfoText.text = $"{region}: AVG ping ~{NetworkManager.Instance._allRegions.FirstOrDefault(x => x.RegionCode == region).RegionPing}ms";
+                {
+                    var ping = NetworkManager.Instance._allRegions.FirstOrDefault(x => x.RegionCode == region).RegionPing;
+                    RegionInfoText.text = $"{region}: AVG ping <color={GetPingColor(ping)}>~{ping}ms</color>";
+                }
             });
         }
 
@@ -133,5 +131,29 @@ namespace FrogSqwadTools.FLZ_UI.LobbyList
         }
 
         internal T GetListTab<T>() where T : LobbyListTab => ListTabs.FirstOrDefault(x => x.GetType() == typeof(T)) as T;
+
+        internal void Update()
+        {
+            if (!ElementInstance.gameObject.activeSelf) return;
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+                HideListBtn.onClick.Invoke();
+
+            if (Input.GetKeyDown(KeyCode.Q))
+                PrevTabBtn.onClick.Invoke();
+
+            if (Input.GetKeyDown(KeyCode.E))
+                NextTabBtn.onClick.Invoke();
+
+            if (Input.GetKeyDown(KeyCode.R))
+                RefreshListBtn.onClick.Invoke();
+        }
+
+        string GetPingColor(int ping)
+        {
+            if (ping <= 102) return "lime";
+            else if (ping >= 102 && ping <= 300) return "yellow";
+            return "red";
+        }
     }
 }

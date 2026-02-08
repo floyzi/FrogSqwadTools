@@ -108,6 +108,8 @@ namespace FrogSqwadTools
                 NetworkManager.Instance != null && NetworkManager.Instance.Runner != null && NetworkManager.Instance.Runner.SessionInfo != null ? 
                 Style.InGame : 
                 Style.Default);
+
+            LobbyListManager.Instance?.Update();
         }
 
         void FixedUpdate()
