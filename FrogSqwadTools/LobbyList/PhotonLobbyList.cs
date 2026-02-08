@@ -1,5 +1,6 @@
 ﻿using FrogSqwadTools.LobbyList.Tabs;
 using Fusion;
+using Fusion.Photon.Realtime;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
@@ -17,22 +18,42 @@ namespace FrogSqwadTools.LobbyList
     {
         NetworkRunner Runner;
         GlobalListTab Owner;
+        PhotonAppSettings Settings;
         internal async Task<bool> Init(GlobalListTab owner)
         {
             Owner = owner;
-            Runner = owner.Owner.gameObject.AddComponent<NetworkRunner>();
-            Runner.AddCallbacks(this);
-
+        
             while (SceneManager.GetActiveScene().name != "Main Menu") //am i retarded?
                 await Task.Delay(100);
 
+            Settings = Resources.FindObjectsOfTypeAll<PhotonAppSettings>().FirstOrDefault();
+            return await BeginConnect("eu");
+        }
+
+        internal async Task<bool> BeginConnect(string region = null)
+        {
             Plugin.Logger.LogInfo("Connecting to photon lobby...");
+
+            if (Runner != null && Runner.IsConnectedToServer)
+            {
+                await Runner.Shutdown();
+                UnityEngine.Object.Destroy(Runner);
+                Runner = null;
+            }
+
+            Runner = Owner.Owner.gameObject.AddComponent<NetworkRunner>();
+            Runner.AddCallbacks(this);
+
+            if (!string.IsNullOrEmpty(region))
+            {
+                Settings.AppSettings.FixedRegion = region;
+                Settings.AppSettings.UseNameServer = true;
+            }
 
             var auth = await NetworkManager.Instance.GetAuthenticationAsync();
             var res = await Runner.JoinSessionLobby(SessionLobby.ClientServer, authentication: auth);
 
             Plugin.Logger.LogInfo("Connected to photon lobby");
-
             return res.Ok;
         }
 

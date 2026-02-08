@@ -232,13 +232,21 @@ namespace FrogSqwadTools.LobbyList.Tabs
             var newLobby = GameObject.Instantiate(LobbyPrefab, Owner.content);
 
             newLobby.name = lobby.Name;
-            newLobby.GetComponentInChildren<Text>().text = $"{lobby.Name} - {lobby.Code} - {lobby.LobbyState} | v{lobby.Version} - {lobby.Players}/8 | Day: {lobby.Day}";
+
+            bool isNew = OldCodes.Add(lobby.Name);
+            if (isNew)
+                NewCodes.Add(lobby.Name);
+
+            var texts = newLobby.GetComponentsInChildren<Text>(true);
+
+            texts.FirstOrDefault(x => x.name == "TextContent").text = $"{lobby.Name} - {lobby.Code} - {lobby.LobbyState} | v{lobby.Version} - {lobby.Players}/8 | Day: {lobby.Day}";
+            texts.FirstOrDefault(x => x.name == "NewMarker").gameObject.SetActive(isNew);
             newLobby.GetComponentInChildren<Button>().onClick.AddListener(() =>
             {
                 var mmm = Resources.FindObjectsOfTypeAll<MainMenuManager>().FirstOrDefault();
                 mmm?.OnLobbyCodeEntered(lobby.Code);
                 SFXSystem.Instance.PlayUI(SFXType.UIClick);
-                Plugin.Instance.LobbyManager.ToggleList(false);
+                LobbyListManager.Instance.ToggleList(false);
             });
 
             CurrentLobbies.Add(newLobby);
@@ -252,11 +260,16 @@ namespace FrogSqwadTools.LobbyList.Tabs
             CurrentLobbies.Clear();
 
             var elems = (List<LobbyInfo>)upcoming;
+            NewCodes.Clear();
 
             NoLobbiesTxt.gameObject.SetActive(elems == null || elems.Count == 0);
 
-            foreach (var item in elems)
+            foreach (var item in elems.OrderBy(x => OldCodes.Contains(x.Code)))
                 CreateLobby(item);
+        }
+
+        protected override void OnTabSetLogic()
+        {
         }
     }
 }

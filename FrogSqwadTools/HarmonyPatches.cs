@@ -59,7 +59,7 @@ namespace FrogSqwadTools
             var lbBtn = GameObject.Instantiate(__instance._hostButton.gameObject, __instance._hostButton.transform.GetParent());
             lbBtn.transform.SetSiblingIndex(2);
             lbBtn.GetComponentInChildren<TextMeshProUGUI>().SetText("Lobby List");
-            lbBtn.GetComponent<CustomButton>().onClick.AddListener(() => Plugin.Instance.LobbyManager.ToggleList(true));
+            lbBtn.GetComponent<CustomButton>().onClick.AddListener(() => LobbyListManager.Instance.ToggleList(true));
         }
 
 

@@ -47,7 +47,6 @@ namespace FrogSqwadTools
         internal static new ManualLogSource Logger;
         internal Harmony Harmony;
         internal AdvancedVersion AdvVer;
-        internal LobbyListManager LobbyManager;
         internal static BuildInfo BuildDetails;
         internal static string ModDir = Path.Combine(Paths.PluginPath, "FrogSqwadTools");
 
@@ -91,7 +90,7 @@ namespace FrogSqwadTools
             }
 
             var menusBundle = AssetBundle.LoadFromFile(bundlePath);
-            LobbyManager = new(menusBundle.LoadAsset<GameObject>("LobbyListPrefab"), menusBundle.LoadAsset<GameObject>("LobbyListLobby"));
+            _ = new LobbyListManager(menusBundle.LoadAsset<GameObject>("LobbyListPrefab"), menusBundle.LoadAsset<GameObject>("LobbyListLobby"));
 
             menusBundle.Unload(false);
 

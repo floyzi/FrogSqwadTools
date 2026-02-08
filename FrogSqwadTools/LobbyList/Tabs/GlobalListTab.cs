@@ -38,13 +38,20 @@ namespace FrogSqwadTools.LobbyList.Tabs
 
             var realCode = lobby.Name + KnownRegions.GetSessionCodeCharForRegion(lobby.Region, NetworkManager.Instance._allRegions);
 
-            newLobby.GetComponentInChildren<Text>().text = $"{realCode} - {lobby.Region} | {lobby.PlayerCount}/{lobby.MaxPlayers}";
+            bool isNew = OldCodes.Add(lobby.Name);
+            if (isNew)
+                NewCodes.Add(lobby.Name);
+
+            var texts = newLobby.GetComponentsInChildren<Text>(true);
+
+            texts.FirstOrDefault(x => x.name == "TextContent").text = $"{realCode} - {lobby.Region} | {lobby.PlayerCount}/{lobby.MaxPlayers}";
+            texts.FirstOrDefault(x => x.name == "NewMarker").gameObject.SetActive(isNew);
             newLobby.GetComponentInChildren<Button>().onClick.AddListener(() =>
             {
                 var mmm = Resources.FindObjectsOfTypeAll<MainMenuManager>().FirstOrDefault();
                 mmm?.OnLobbyCodeEntered(realCode);
                 SFXSystem.Instance.PlayUI(SFXType.UIClick);
-                Plugin.Instance.LobbyManager.ToggleList(false);
+                LobbyListManager.Instance.ToggleList(false);
             });
 
             CurrentLobbies.Add(newLobby);
@@ -59,15 +66,20 @@ namespace FrogSqwadTools.LobbyList.Tabs
 
             var elems = (List<SessionInfo>)upcoming;
 
+            NewCodes.Clear();
+
             NoLobbiesTxt.gameObject.SetActive(elems == null || elems.Count == 0);
 
-            foreach (var item in elems)
+            foreach (var item in elems.OrderBy(x => OldCodes.Contains(x.Name)))
                 CreateLobby(item);
         }
 
         internal override void RefreshRequest(bool silent)
         {
-            throw new NotImplementedException();
+        }
+
+        protected override void OnTabSetLogic()
+        {
         }
     }
 }

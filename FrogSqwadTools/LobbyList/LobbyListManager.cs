@@ -3,6 +3,7 @@ using FrogSqwadTools.LobbyList.Core;
 using FrogSqwadTools.LobbyList.Tabs;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,8 @@ namespace FrogSqwadTools.LobbyList
 {
     internal class LobbyListManager
     {
+        internal static LobbyListManager Instance { get; private set; }
+
         GameObject ListMenuPrefab { get; }
         readonly GameObject CurrentListMenu;
  
@@ -20,6 +23,7 @@ namespace FrogSqwadTools.LobbyList
         readonly Text TitleText;
         internal LobbyListManager(GameObject listPrefab, GameObject item)
         {
+            Instance = this;
             ListMenuPrefab = listPrefab;
 
             CurrentListMenu = GameObject.Instantiate(ListMenuPrefab);
@@ -64,7 +68,6 @@ namespace FrogSqwadTools.LobbyList
             ListTabs.Add(new CustomListTab("Custom", allLists.FirstOrDefault(x => x.name == "CustomList"), refrBtn, item));
 
             SetTabAtIndex(0);
-            SetStats(0, 0);
         }
 
         internal void ToggleList(bool state) => CurrentListMenu.SetActive(state);
@@ -85,12 +88,13 @@ namespace FrogSqwadTools.LobbyList
             CurrentTab?.Owner.gameObject.SetActive(false);
             CurrentTab = ListTabs[indx];
             CurrentTab.Owner.gameObject.SetActive(true);
+            CurrentTab.OnTabSet();
             TitleText.text = $"{CurrentTab.Name} LIST";
         }
 
         internal void SetStats(int lobbyCount, int newLobbies)
         {
-            StatsText.text = $"Lobbies in list: {lobbyCount} | New lobbies: {102}";
+            StatsText.text = $"Lobbies in list: {lobbyCount} | New lobbies: {newLobbies}";
         }
     }
 }
