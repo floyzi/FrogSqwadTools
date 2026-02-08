@@ -1,6 +1,7 @@
 ﻿using FrogSqwad.SFX;
 using FrogSqwad.UI;
-using FrogSqwadTools.LobbyList.Core;
+using FrogSqwadTools.FLZ_UI.LobbyList;
+using FrogSqwadTools.FLZ_UI.LobbyList.Core;
 using FS_LobbyList_Protocol;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -20,7 +21,7 @@ using static FS_LobbyList_Protocol.LobbyUpdateRequest;
 using static LobbyManager;
 using static UnityEngine.UI.GridLayoutGroup;
 
-namespace FrogSqwadTools.LobbyList.Tabs
+namespace FrogSqwadTools.FLZ_UI.LobbyList.Tabs
 {
     [Obsolete("Replaced by global list")] //...but i just cant to let it go
     internal class CustomListTab : LobbyListTab

@@ -1,14 +1,13 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.Mono;
-using FrogSqwadTools.LobbyList;
+using FrogSqwadTools.FLZ_UI.LobbyList;
 using HarmonyLib;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Unity.VisualScripting;
 using UnityEngine;
 using static FrogSqwadTools.AdvancedVersion;
 

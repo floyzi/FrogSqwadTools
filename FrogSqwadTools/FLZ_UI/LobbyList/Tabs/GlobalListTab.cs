@@ -1,5 +1,7 @@
 ﻿using FrogSqwad.SFX;
-using FrogSqwadTools.LobbyList.Core;
+using FrogSqwad.UI;
+using FrogSqwadTools.FLZ_UI.LobbyList;
+using FrogSqwadTools.FLZ_UI.LobbyList.Core;
 using Fusion;
 using Steamworks.Data;
 using System;
@@ -8,10 +10,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static UnityEngine.UI.GridLayoutGroup;
 
-namespace FrogSqwadTools.LobbyList.Tabs
+namespace FrogSqwadTools.FLZ_UI.LobbyList.Tabs
 {
     internal class GlobalListTab : LobbyListTab
     {
@@ -79,7 +83,8 @@ namespace FrogSqwadTools.LobbyList.Tabs
 
             texts.FirstOrDefault(x => x.name == "TextContent").text = $"{realCode} - {lobby.Region} | {lobby.PlayerCount}/{lobby.MaxPlayers}";
             texts.FirstOrDefault(x => x.name == "NewMarker").gameObject.SetActive(isNew);
-            newLobby.GetComponentInChildren<Button>().onClick.AddListener(() =>
+
+            FLZ_Extensions.SwapButton(newLobby.GetComponentInChildren<Button>()).onClick.AddListener(() =>
             {
                 var mmm = Resources.FindObjectsOfTypeAll<MainMenuManager>().FirstOrDefault();
                 mmm?.OnLobbyCodeEntered(realCode);

@@ -1,6 +1,8 @@
 ﻿using FrogSqwad.SFX;
-using FrogSqwadTools.LobbyList.Core;
-using FrogSqwadTools.LobbyList.Tabs;
+using FrogSqwad.UI;
+using FrogSqwadTools.FLZ_UI.Core;
+using FrogSqwadTools.FLZ_UI.LobbyList.Core;
+using FrogSqwadTools.FLZ_UI.LobbyList.Tabs;
 using Fusion;
 using System;
 using System.Collections.Generic;
@@ -11,81 +13,73 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace FrogSqwadTools.LobbyList
+namespace FrogSqwadTools.FLZ_UI.LobbyList
 {
-    internal class LobbyListManager
+    internal class LobbyListManager : UIElement
     {
         internal static LobbyListManager Instance { get; private set; }
 
-        GameObject ListMenuPrefab { get; }
         internal GameObject RegionDropdownPrefab { get; }
-
-        readonly GameObject CurrentListMenu;
         internal Dropdown RegionDropdown { get; private set; }
  
         LobbyListTab CurrentTab;
         readonly List<LobbyListTab> ListTabs;
 
-        readonly Text StatsText;
-        readonly Text TitleText;
-        readonly Text RegionInfoText;
+        [UIReference("Stats")] Text StatsText { get; set; }
+        [UIReference("ListTitle")] Text TitleText { get; set; }
+        [UIReference("RegionInfo")] Text RegionInfoText { get; set; }
+        [UIReference("KillList")] CustomButton HideListBtn { get; set; }
+        [UIReference("RefreshList")] CustomButton RefreshListBtn { get; set; }
+        [UIReference("PrevTab")] CustomButton PrevTabBtn { get; set; }
+        [UIReference("NextTab")] CustomButton NextTabBtn { get; set; }
+        [UIReference("JoinRandomBtn")] CustomButton JoinRandomBtn { get; set; }
 
         internal PhotonRegionsLookup KnownRegions;
-        internal LobbyListManager(GameObject listPrefab, GameObject item, GameObject regionDropdown)
+        internal LobbyListManager(GameObject listPrefab, GameObject item, GameObject regionDropdown) : base(GameObject.Instantiate(listPrefab).GetComponent<Transform>())
         {
             Instance = this;
-            ListMenuPrefab = listPrefab;
             RegionDropdownPrefab = regionDropdown;
 
-            CurrentListMenu = GameObject.Instantiate(ListMenuPrefab);
             ToggleList(false);
-            GameObject.DontDestroyOnLoad(CurrentListMenu);
+            GameObject.DontDestroyOnLoad(ElementInstance);
 
-            var allBtns = CurrentListMenu.transform.GetComponentsInChildren<Button>();
-            allBtns.FirstOrDefault(x => x.name == "KillList").onClick.AddListener(() =>
+            HideListBtn.onClick.AddListener(() =>
             {
                 SFXSystem.Instance.PlayUI(SFXType.UIClick);
-                CurrentListMenu.SetActive(false);
+                ElementInstance.gameObject.SetActive(false);
             });
 
-            var refrBtn = allBtns.FirstOrDefault(x => x.name == "RefreshList");
-            refrBtn.onClick.AddListener(() =>
+            RefreshListBtn.onClick.AddListener(() =>
             {
                 SFXSystem.Instance.PlayUI(SFXType.UIClick);
                 CurrentTab.RefreshRequest(false);
             });
 
-            allBtns.FirstOrDefault(x => x.name == "PrevTab").onClick.AddListener(() =>
+            PrevTabBtn.onClick.AddListener(() =>
             {
                 SFXSystem.Instance.PlayUI(SFXType.UIClick);
                 var prev = (ListTabs.IndexOf(CurrentTab) - 1 + ListTabs.Count) % ListTabs.Count;
                 SetTabAtIndex(prev);
             });
 
-            allBtns.FirstOrDefault(x => x.name == "NextTab").onClick.AddListener(() =>
+            NextTabBtn.onClick.AddListener(() =>
             {
                 SFXSystem.Instance.PlayUI(SFXType.UIClick);
                 var next = (ListTabs.IndexOf(CurrentTab) + 1) % ListTabs.Count;
                 SetTabAtIndex(next);
             });
 
-            allBtns.FirstOrDefault(x => x.name == "JoinRandomBtn").onClick.AddListener(() =>
+            JoinRandomBtn.onClick.AddListener(() =>
             {
                 SFXSystem.Instance.PlayUI(SFXType.UIClick);
                 CurrentTab.JoinRandom();
             });
 
-            var allTxts = CurrentListMenu.transform.GetComponentsInChildren<Text>();
-
-            StatsText = allTxts.FirstOrDefault(x => x.name == "Stats");
-            TitleText = allTxts.FirstOrDefault(x => x.name == "ListTitle");
-            RegionInfoText = allTxts.FirstOrDefault(x => x.name == "RegionInfo");
-
-            var allLists = CurrentListMenu.transform.GetComponentsInChildren<ScrollRect>();
+            var allLists = ElementInstance.gameObject.transform.GetComponentsInChildren<ScrollRect>();
             ListTabs = [];
 
-            ListTabs.Add(new GlobalListTab("Global", allLists.FirstOrDefault(x => x.name == "GlobalList"), refrBtn, item));
-            //ListTabs.Add(new CustomListTab("Custom", allLists.FirstOrDefault(x => x.name == "CustomList"), refrBtn, item));
+            ListTabs.Add(new GlobalListTab("Global", allLists.FirstOrDefault(x => x.name == "GlobalList"), RefreshListBtn, item));
+            //ListTabs.Add(new CustomListTab("Custom", allLists.FirstOrDefault(x => x.name == "CustomList"), RefreshListBtn, item));
 
             SetTabAtIndex(0);
 
@@ -99,7 +93,7 @@ namespace FrogSqwadTools.LobbyList
             });
         }
 
-        internal void ToggleList(bool state) => CurrentListMenu.SetActive(state);
+        internal void ToggleList(bool state) => ElementInstance.gameObject.SetActive(state);
 
         void SetTabAtIndex(int indx)
         {

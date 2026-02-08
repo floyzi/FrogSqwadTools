@@ -1,6 +1,6 @@
 ﻿using FrogSqwad.UI;
-using FrogSqwadTools.LobbyList;
-using FrogSqwadTools.LobbyList.Tabs;
+using FrogSqwadTools.FLZ_UI.LobbyList;
+using FrogSqwadTools.FLZ_UI.LobbyList.Tabs;
 using Fusion;
 using HarmonyLib;
 using TMPro;

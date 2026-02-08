@@ -1,4 +1,4 @@
-﻿using FrogSqwadTools.LobbyList.Tabs;
+﻿using FrogSqwadTools.FLZ_UI.LobbyList.Tabs;
 using Fusion;
 using Fusion.Photon.Realtime;
 using Fusion.Sockets;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace FrogSqwadTools.LobbyList
+namespace FrogSqwadTools.FLZ_UI.LobbyList
 {
     internal class PhotonLobbyList : INetworkRunnerCallbacks
     {
