@@ -123,6 +123,7 @@ namespace FrogSqwadTools.LobbyList.Tabs
                 return;
 
             Refresh(_pendingLobbies);
+
             _hasPending = false;
             _pendingLobbies.Clear();
         }

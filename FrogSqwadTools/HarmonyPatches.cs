@@ -1,5 +1,7 @@
 ﻿using FrogSqwad.UI;
 using FrogSqwadTools.LobbyList;
+using FrogSqwadTools.LobbyList.Tabs;
+using Fusion;
 using HarmonyLib;
 using TMPro;
 using Unity.VisualScripting;
@@ -30,7 +32,7 @@ namespace FrogSqwadTools
             __instance._showLobbyCodeButton.name = "Init";
             __instance._showLobbyCodeButton.GetComponentInChildren<TextMeshProUGUI>().SetText("Show & Copy Lobby Code");
 
-            //no point in restoring this atp
+            //no point in restoring this atp ... no there IS a point
 
             //if (NetworkManager.Instance.Runner.IsServer)
             //{
@@ -69,8 +71,21 @@ namespace FrogSqwadTools
             lbInp.localPosition += new Vector3(0, -95, 0);
 
             LobbyListManager.Instance.InitRegionDropdown(regionDropdown);
+
+            _ = LobbyListManager.Instance.GetListTab<GlobalListTab>().LobbyList.BeginConnect();
         }
 
+        [HarmonyPatch(typeof(NetworkManager), nameof(NetworkManager.StartHost)), HarmonyPostfix]
+        static void StartHost(NetworkManager __instance)
+        {
+            _ = LobbyListManager.Instance.GetListTab<GlobalListTab>().LobbyList.TerminateConnection();
+        }
+
+        [HarmonyPatch(typeof(NetworkManager), nameof(NetworkManager.StartJoin)), HarmonyPostfix]
+        static void StartJoin(NetworkManager __instance)
+        {
+            _ = LobbyListManager.Instance.GetListTab<GlobalListTab>().LobbyList.TerminateConnection();
+        }
 
         //[HarmonyPatch(typeof(LevelLoader), nameof(LevelLoader.LoadMainMenu)), HarmonyPostfix]
         //static void LoadMainMenu(LevelLoader __instance)

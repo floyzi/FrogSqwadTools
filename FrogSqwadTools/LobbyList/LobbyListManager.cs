@@ -138,6 +138,6 @@ namespace FrogSqwadTools.LobbyList
             });
         }
 
-        T GetListTab<T>() where T : LobbyListTab => ListTabs.FirstOrDefault(x => x.GetType() == typeof(T)) as T;
+        internal T GetListTab<T>() where T : LobbyListTab => ListTabs.FirstOrDefault(x => x.GetType() == typeof(T)) as T;
     }
 }

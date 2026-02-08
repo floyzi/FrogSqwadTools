@@ -24,7 +24,7 @@ namespace FrogSqwadTools.LobbyList
         {
             Owner = owner;
         
-            while (SceneManager.GetActiveScene().name != "Main Menu") //am i retarded?
+            while (SceneManager.GetActiveScene().name != "Main Menu") //am i retarded? (yes)
                 await Task.Delay(100);
 
             Settings = Resources.FindObjectsOfTypeAll<PhotonAppSettings>().FirstOrDefault();
@@ -36,8 +36,9 @@ namespace FrogSqwadTools.LobbyList
         {
             if (!_canConnect) return;
 
-            var hasRegion = !string.IsNullOrEmpty(region);
-            Plugin.Logger.LogInfo(string.Format("Connecting to photon lobby on region \"{0}\"...", hasRegion ? region : "auto"));
+            var hasRegion = !string.IsNullOrWhiteSpace(region);
+            Plugin.Logger.LogInfo(string.Format("Connecting to lobby in \"{0}\"...", hasRegion ? region : "auto"));
+
             OnConnectBegin?.Invoke();
 
             try
@@ -62,7 +63,7 @@ namespace FrogSqwadTools.LobbyList
                 if (!hasRegion)
                 {
                     var bestReg = regs.Where(r => r.RegionPing > 0).OrderBy(r => r.RegionPing).FirstOrDefault();
-                    Plugin.Logger.LogInfo($"Best region to connect is \"{bestReg.RegionCode}\" with {bestReg.RegionPing}ms ping");
+                    Plugin.Logger.LogInfo($"Best region to connect is \"{bestReg.RegionCode}\" with {bestReg.RegionPing}ms ping!");
                     region = bestReg.RegionCode;
                 }
 
@@ -72,7 +73,7 @@ namespace FrogSqwadTools.LobbyList
                 var res = await Runner.JoinSessionLobby(SessionLobby.ClientServer, authentication: auth);
 
                 if (res.Ok)
-                    Plugin.Logger.LogInfo("Connected to photon lobby");
+                    Plugin.Logger.LogInfo("Connected to lobby");
                 else
                     ErrorManager.Instance.ShowDialog($"Failed to connect to lobby list (tried to connect to: {region})");
 
@@ -92,6 +93,8 @@ namespace FrogSqwadTools.LobbyList
 
         internal async Task TerminateConnection()
         {
+            Plugin.Logger.LogInfo("Terminating lobby connection...");
+
             await Runner.Shutdown();
             GameObject.Destroy(Runner);
             Runner = null;
