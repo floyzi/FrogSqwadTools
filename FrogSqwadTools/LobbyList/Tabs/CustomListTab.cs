@@ -108,7 +108,7 @@ namespace FrogSqwadTools.LobbyList.Tabs
             UpdateLobbyInfo();
         }
 
-        internal override void RefreshRequest(bool silent)
+        protected override void RefreshRequestLogic(bool silent)
         {
             RefreshBtn.interactable = false;
 
@@ -121,7 +121,7 @@ namespace FrogSqwadTools.LobbyList.Tabs
                 if (res.Type != Message.MessageType.LobbyList) return;
 
                 var listArray = (JArray)res.Payload;
-                RefreshList(listArray.ToObject<List<LobbyInfo>>());
+                UpdateList(listArray.ToObject<List<LobbyInfo>>());
                 LoadingTxt.gameObject.SetActive(false);
                 if (!silent) SFXSystem.Instance.PlayUI(SFXType.UIConfirm);
             }), new(() =>
@@ -252,7 +252,7 @@ namespace FrogSqwadTools.LobbyList.Tabs
             CurrentLobbies.Add(newLobby);
         }
 
-        protected override void RefreshListLogic(object upcoming)
+        internal override void UpdateList(object upcoming)
         {
             foreach (var item in CurrentLobbies)
                 GameObject.Destroy(item.gameObject);

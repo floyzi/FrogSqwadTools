@@ -44,13 +44,13 @@ namespace FrogSqwadTools.LobbyList.Core
             Owner.gameObject.SetActive(false);
         }
 
-        internal abstract void RefreshRequest(bool silent);
-        protected abstract void RefreshListLogic(object upcoming);
-        internal void RefreshList(object upcoming)
+        protected abstract void RefreshRequestLogic(bool silent);
+        internal void RefreshRequest(bool silent)
         {
-            RefreshListLogic(upcoming);
+            RefreshRequestLogic(silent);
             LobbyListManager.Instance.SetStats(CurrentLobbies.Count, NewCodes.Count);
         }
+        internal abstract void UpdateList(object upcoming);
         internal abstract void CreateLobby(object source);
         protected abstract void OnTabSetLogic();
         internal void OnTabSet()

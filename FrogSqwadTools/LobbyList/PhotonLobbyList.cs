@@ -57,7 +57,7 @@ namespace FrogSqwadTools.LobbyList
             return res.Ok;
         }
 
-        public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) => Owner.RefreshList(sessionList);
+        public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) => Owner.UpdateList(sessionList);
 
         public void OnConnectedToServer(NetworkRunner runner)
         {

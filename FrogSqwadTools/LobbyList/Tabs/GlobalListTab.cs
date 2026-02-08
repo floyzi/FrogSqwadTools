@@ -17,9 +17,14 @@ namespace FrogSqwadTools.LobbyList.Tabs
     {
         readonly PhotonLobbyList LobbyList;
         PhotonRegionsLookup KnownRegions;
+        List<SessionInfo> _pendingLobbies;
+        bool _hasPending;
+        bool _hasSeenLobbiesBefore;
         internal GlobalListTab(string name, ScrollRect owner, Button refrBtn, GameObject lobby) : base(name, owner, refrBtn, lobby)
         {
             LobbyList = new();
+            _pendingLobbies = [];
+
             _ = LobbyList.Init(this).ContinueWith(x =>
             {
                 ConnectionFailedTxt.gameObject.SetActive(!x.Result);
@@ -57,25 +62,41 @@ namespace FrogSqwadTools.LobbyList.Tabs
             CurrentLobbies.Add(newLobby);
         }
 
-        protected override void RefreshListLogic(object upcoming)
+        internal override void UpdateList(object upcoming)
+        {
+            _pendingLobbies = (List<SessionInfo>)upcoming;
+            _hasPending = true;
+
+            if (!_hasSeenLobbiesBefore)
+            {
+                _hasSeenLobbiesBefore = true;
+                RefreshRequest(true);
+            }
+        }
+
+        void Refresh(List<SessionInfo> upcoming)
         {
             foreach (var item in CurrentLobbies)
                 GameObject.Destroy(item.gameObject);
 
             CurrentLobbies.Clear();
 
-            var elems = (List<SessionInfo>)upcoming;
-
             NewCodes.Clear();
 
-            NoLobbiesTxt.gameObject.SetActive(elems == null || elems.Count == 0);
+            NoLobbiesTxt.gameObject.SetActive(upcoming == null || upcoming.Count == 0);
 
-            foreach (var item in elems.OrderBy(x => OldCodes.Contains(x.Name)))
+            foreach (var item in upcoming.OrderBy(x => OldCodes.Contains(x.Name)))
                 CreateLobby(item);
         }
 
-        internal override void RefreshRequest(bool silent)
+        protected override void RefreshRequestLogic(bool silent)
         {
+            if (!_hasPending)
+                return;
+
+            Refresh(_pendingLobbies);
+            _hasPending = false;
+            _pendingLobbies.Clear();
         }
 
         protected override void OnTabSetLogic()
