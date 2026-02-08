@@ -90,7 +90,7 @@ namespace FrogSqwadTools
             }
 
             var menusBundle = AssetBundle.LoadFromFile(bundlePath);
-            _ = new LobbyListManager(menusBundle.LoadAsset<GameObject>("LobbyListPrefab"), menusBundle.LoadAsset<GameObject>("LobbyListLobby"));
+            _ = new LobbyListManager(menusBundle.LoadAsset<GameObject>("LobbyListPrefab"), menusBundle.LoadAsset<GameObject>("LobbyListLobby"), menusBundle.LoadAsset<GameObject>("LobbyListRegionDropdown"));
 
             menusBundle.Unload(false);
 

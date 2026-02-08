@@ -1,10 +1,13 @@
 ﻿using FrogSqwad.SFX;
 using FrogSqwadTools.LobbyList.Core;
 using FrogSqwadTools.LobbyList.Tabs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace FrogSqwadTools.LobbyList
@@ -14,17 +17,23 @@ namespace FrogSqwadTools.LobbyList
         internal static LobbyListManager Instance { get; private set; }
 
         GameObject ListMenuPrefab { get; }
+        internal GameObject RegionDropdownPrefab { get; }
+
         readonly GameObject CurrentListMenu;
+        internal Dropdown RegionDropdown { get; private set; }
  
         LobbyListTab CurrentTab;
         readonly List<LobbyListTab> ListTabs;
 
         readonly Text StatsText;
         readonly Text TitleText;
-        internal LobbyListManager(GameObject listPrefab, GameObject item)
+
+        internal PhotonRegionsLookup KnownRegions;
+        internal LobbyListManager(GameObject listPrefab, GameObject item, GameObject regionDropdown)
         {
             Instance = this;
             ListMenuPrefab = listPrefab;
+            RegionDropdownPrefab = regionDropdown;
 
             CurrentListMenu = GameObject.Instantiate(ListMenuPrefab);
             ToggleList(false);
@@ -96,5 +105,31 @@ namespace FrogSqwadTools.LobbyList
         {
             StatsText.text = $"Lobbies in list: {lobbyCount} | New lobbies: {newLobbies}";
         }
+
+        internal void InitRegionDropdown(GameObject dropdownObj)
+        {
+            KnownRegions = Resources.FindObjectsOfTypeAll<PhotonRegionsLookup>().FirstOrDefault();
+
+            RegionDropdown = dropdownObj.GetComponent<Dropdown>();
+
+            RegionDropdown.ClearOptions();
+
+            RegionDropdown.options.Add(new("Auto"));
+            foreach (var region in KnownRegions.Regions)
+            {
+                RegionDropdown.options.Add(new(region.Code));
+            }
+
+            RegionDropdown.onValueChanged.AddListener(x =>
+            {
+                string goWith = null;
+                if (x != 0)
+                    goWith = KnownRegions.Regions[x - 1].Code;
+
+                _ = GetListTab<GlobalListTab>().LobbyList.BeginConnect(goWith);
+            });
+        }
+
+        T GetListTab<T>() where T : LobbyListTab => ListTabs.FirstOrDefault(x => x.GetType() == typeof(T)) as T;
     }
 }

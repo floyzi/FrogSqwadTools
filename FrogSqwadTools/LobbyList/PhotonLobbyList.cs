@@ -16,10 +16,14 @@ namespace FrogSqwadTools.LobbyList
 {
     internal class PhotonLobbyList : INetworkRunnerCallbacks
     {
+        internal static Action OnConnectBegin;
+        internal static Action<bool, string> OnConnectEnd;
+
         NetworkRunner Runner;
         GlobalListTab Owner;
         PhotonAppSettings Settings;
-        internal async Task<bool> Init(GlobalListTab owner)
+        bool _canConnect = true;
+        internal async Task Init(GlobalListTab owner)
         {
             Owner = owner;
         
@@ -27,34 +31,67 @@ namespace FrogSqwadTools.LobbyList
                 await Task.Delay(100);
 
             Settings = Resources.FindObjectsOfTypeAll<PhotonAppSettings>().FirstOrDefault();
-            return await BeginConnect("eu");
+
+            await BeginConnect();
         }
 
-        internal async Task<bool> BeginConnect(string region = null)
+        internal async Task BeginConnect(string region = null)
         {
-            Plugin.Logger.LogInfo("Connecting to photon lobby...");
+            if (!_canConnect) return;
 
-            if (Runner != null && Runner.IsConnectedToServer)
+            var hasRegion = !string.IsNullOrEmpty(region);
+            Plugin.Logger.LogInfo(string.Format("Connecting to photon lobby on region \"{0}\"...", hasRegion ? region : "Auto"));
+            OnConnectBegin?.Invoke();
+
+            try
             {
-                await Runner.Shutdown();
-                UnityEngine.Object.Destroy(Runner);
-                Runner = null;
-            }
+                _canConnect = false;
+                LobbyListManager.Instance.RegionDropdown.interactable = false;
 
-            Runner = Owner.Owner.gameObject.AddComponent<NetworkRunner>();
-            Runner.AddCallbacks(this);
+                if (Runner != null)
+                {
+                    await Runner.Shutdown();
+                    GameObject.Destroy(Runner);
+                    Runner = null;
 
-            if (!string.IsNullOrEmpty(region))
-            {
+                    await Task.Yield();
+                }
+
+                var lbr = new GameObject("LobbyRunner");
+                lbr.transform.SetParent(Owner.Owner.transform);
+                Runner = lbr.AddComponent<NetworkRunner>();
+                Runner.AddCallbacks(this);
+
+                if (!hasRegion)
+                {
+                    var regs = await NetworkRunner.GetAvailableRegions();
+                    var bestReg = regs.Where(r => r.RegionPing > 0).OrderBy(r => r.RegionPing).FirstOrDefault();
+                    Plugin.Logger.LogInfo($"Best region to connect is \"{bestReg.RegionCode}\" with {bestReg.RegionPing}ms ping");
+                    region = bestReg.RegionCode;
+                }
+
                 Settings.AppSettings.FixedRegion = region;
-                Settings.AppSettings.UseNameServer = true;
+
+                var auth = await NetworkManager.Instance.GetAuthenticationAsync();
+                var res = await Runner.JoinSessionLobby(SessionLobby.ClientServer, authentication: auth);
+
+                if (res.Ok)
+                    Plugin.Logger.LogInfo("Connected to photon lobby");
+                else
+                    ErrorManager.Instance.ShowDialog($"Failed to connect to lobby list (tried to connect to: {region})");
+
+                OnConnectEnd?.Invoke(res.Ok, region);
             }
-
-            var auth = await NetworkManager.Instance.GetAuthenticationAsync();
-            var res = await Runner.JoinSessionLobby(SessionLobby.ClientServer, authentication: auth);
-
-            Plugin.Logger.LogInfo("Connected to photon lobby");
-            return res.Ok;
+            catch (Exception e)
+            {
+                Plugin.Logger.LogInfo($"Connect attempt failed\n{e}");
+                OnConnectEnd?.Invoke(false, null);
+            }
+            finally
+            {
+                _canConnect = true;
+                LobbyListManager.Instance.RegionDropdown.interactable = true;
+            }
         }
 
         public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) => Owner.UpdateList(sessionList);

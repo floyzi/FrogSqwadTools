@@ -60,6 +60,15 @@ namespace FrogSqwadTools
             lbBtn.transform.SetSiblingIndex(2);
             lbBtn.GetComponentInChildren<TextMeshProUGUI>().SetText("Lobby List");
             lbBtn.GetComponent<CustomButton>().onClick.AddListener(() => LobbyListManager.Instance.ToggleList(true));
+
+            var menuContent = lbBtn.transform.GetParent().transform.GetParent();
+            var lbInp = menuContent.transform.Find("Lobby code input")?.transform;
+            var regionDropdown = GameObject.Instantiate(LobbyListManager.Instance.RegionDropdownPrefab, lbInp.transform.position, Quaternion.identity, menuContent);
+
+            regionDropdown.transform.localPosition += new Vector3(-140, 0, 0);
+            lbInp.localPosition += new Vector3(0, -95, 0);
+
+            LobbyListManager.Instance.InitRegionDropdown(regionDropdown);
         }
 
 

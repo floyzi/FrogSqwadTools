@@ -15,8 +15,7 @@ namespace FrogSqwadTools.LobbyList.Tabs
 {
     internal class GlobalListTab : LobbyListTab
     {
-        readonly PhotonLobbyList LobbyList;
-        PhotonRegionsLookup KnownRegions;
+        internal readonly PhotonLobbyList LobbyList;
         List<SessionInfo> _pendingLobbies;
         bool _hasPending;
         bool _hasSeenLobbiesBefore;
@@ -25,10 +24,37 @@ namespace FrogSqwadTools.LobbyList.Tabs
             LobbyList = new();
             _pendingLobbies = [];
 
-            _ = LobbyList.Init(this).ContinueWith(x =>
+            _ = LobbyList.Init(this);
+
+            PhotonLobbyList.OnConnectBegin = new(() =>
             {
-                ConnectionFailedTxt.gameObject.SetActive(!x.Result);
-                KnownRegions = Resources.FindObjectsOfTypeAll<PhotonRegionsLookup>().FirstOrDefault();
+                ConnectionFailedTxt.gameObject.SetActive(false);
+                NoLobbiesTxt.gameObject.SetActive(false);
+                LoadingTxt.gameObject.SetActive(true);
+            });
+
+            PhotonLobbyList.OnConnectEnd = new((success, region) =>
+            {
+                _hasSeenLobbiesBefore = false;
+                _pendingLobbies?.Clear();
+
+                foreach (var item in CurrentLobbies)
+                    GameObject.Destroy(item.gameObject);
+
+                CurrentLobbies.Clear();
+
+                NewCodes.Clear();
+
+                LoadingTxt.gameObject.SetActive(false);
+                NoLobbiesTxt.gameObject.SetActive(false);
+                ConnectionFailedTxt.gameObject.SetActive(!success);
+
+                if (!string.IsNullOrEmpty(region))
+                {
+                    var newReg = LobbyListManager.Instance.RegionDropdown.options.Find(x => string.Equals(x.text, region, StringComparison.InvariantCultureIgnoreCase));
+                    if (newReg != null)
+                        LobbyListManager.Instance.RegionDropdown.value = LobbyListManager.Instance.RegionDropdown.options.IndexOf(newReg);
+                }
             });
         }
 
@@ -41,7 +67,7 @@ namespace FrogSqwadTools.LobbyList.Tabs
 
             newLobby.name = lobby.Name;
 
-            var realCode = lobby.Name + KnownRegions.GetSessionCodeCharForRegion(lobby.Region, NetworkManager.Instance._allRegions);
+            var realCode = lobby.Name + LobbyListManager.Instance.KnownRegions.GetSessionCodeCharForRegion(lobby.Region, NetworkManager.Instance._allRegions);
 
             bool isNew = OldCodes.Add(lobby.Name);
             if (isNew)
