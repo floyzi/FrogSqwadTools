@@ -1,6 +1,8 @@
 ﻿using FrogSqwad.UI;
+using FrogSqwadTools.LobbyList;
 using HarmonyLib;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace FrogSqwadTools
@@ -28,19 +30,21 @@ namespace FrogSqwadTools
             __instance._showLobbyCodeButton.name = "Init";
             __instance._showLobbyCodeButton.GetComponentInChildren<TextMeshProUGUI>().SetText("Show & Copy Lobby Code");
 
-            if (NetworkManager.Instance.Runner.IsServer)
-            {
-                var lobbyToggleBtn = GameObject.Instantiate(__instance._showLobbyCodeButton.gameObject, __instance._showLobbyCodeButton.transform.GetParent());
-                lobbyToggleBtn.GetComponentInChildren<TextMeshProUGUI>().SetText("Show My Lobby In List");
-                lobbyToggleBtn.transform.SetSiblingIndex(lobbyToggleBtn.transform.GetSiblingIndex() -  1);
-                var btn = lobbyToggleBtn.GetComponent<CustomButton>();
-                btn.onClick.AddListener(() =>
-                {
-                    Plugin.Instance.LobbyManager.ToggleLobbyState(btn);
-                });
+            //no point in restoring this atp
 
-                __instance._showLobbyCodeButton.transform.GetParent().transform.localPosition += new Vector3(0, 80, 0); 
-            }
+            //if (NetworkManager.Instance.Runner.IsServer)
+            //{
+            //    var lobbyToggleBtn = GameObject.Instantiate(__instance._showLobbyCodeButton.gameObject, __instance._showLobbyCodeButton.transform.GetParent());
+            //    lobbyToggleBtn.GetComponentInChildren<TextMeshProUGUI>().SetText("Show My Lobby In List");
+            //    lobbyToggleBtn.transform.SetSiblingIndex(lobbyToggleBtn.transform.GetSiblingIndex() -  1);
+            //    var btn = lobbyToggleBtn.GetComponent<CustomButton>();
+            //    btn.onClick.AddListener(() =>
+            //    {
+            //        Plugin.Instance.LobbyManager.ToggleLobbyState(btn);
+            //    });
+
+            //    __instance._showLobbyCodeButton.transform.GetParent().transform.localPosition += new Vector3(0, 80, 0); 
+            //}
         }
 
         [HarmonyPatch(typeof(PauseMenu), nameof(PauseMenu.OnShowLobbyCodePressed)), HarmonyPostfix]
@@ -59,28 +63,28 @@ namespace FrogSqwadTools
         }
 
 
-        [HarmonyPatch(typeof(LevelLoader), nameof(LevelLoader.LoadMainMenu)), HarmonyPostfix]
-        static void LoadMainMenu(LevelLoader __instance)
-        {
-            Plugin.Instance.LobbyManager.CloseLobbyIfNeeded();
-        }
+        //[HarmonyPatch(typeof(LevelLoader), nameof(LevelLoader.LoadMainMenu)), HarmonyPostfix]
+        //static void LoadMainMenu(LevelLoader __instance)
+        //{
+        //    Plugin.Instance.LobbyManager.CloseLobbyIfNeeded();
+        //}
 
-        [HarmonyPatch(typeof(NetworkManager), nameof(NetworkManager.OnPlayerJoined)), HarmonyPostfix]
-        static void OnPlayerJoined(NetworkManager __instance)
-        {
-            Plugin.Instance.LobbyManager.UpdateLobbyInfo();
-        }
+        //[HarmonyPatch(typeof(NetworkManager), nameof(NetworkManager.OnPlayerJoined)), HarmonyPostfix]
+        //static void OnPlayerJoined(NetworkManager __instance)
+        //{
+        //    Plugin.Instance.LobbyManager.UpdateLobbyInfo();
+        //}
 
-        [HarmonyPatch(typeof(NetworkManager), nameof(NetworkManager.OnPlayerLeft)), HarmonyPostfix]
-        static void OnPlayerLeft(NetworkManager __instance)
-        {
-            Plugin.Instance.LobbyManager.UpdateLobbyInfo();
-        }
+        //[HarmonyPatch(typeof(NetworkManager), nameof(NetworkManager.OnPlayerLeft)), HarmonyPostfix]
+        //static void OnPlayerLeft(NetworkManager __instance)
+        //{
+        //    Plugin.Instance.LobbyManager.UpdateLobbyInfo();
+        //}
 
-        [HarmonyPatch(typeof(GameManager), nameof(GameManager.ChangeState)), HarmonyPostfix]
-        static void ChangeState(GameManager __instance)
-        {
-            Plugin.Instance.LobbyManager.UpdateLobbyInfo();
-        }
+        //[HarmonyPatch(typeof(GameManager), nameof(GameManager.ChangeState)), HarmonyPostfix]
+        //static void ChangeState(GameManager __instance)
+        //{
+        //    Plugin.Instance.LobbyManager.UpdateLobbyInfo();
+        //}
     }
 }

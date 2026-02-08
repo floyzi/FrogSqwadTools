@@ -17,7 +17,7 @@ namespace FrogSqwadTools
     [BepInPlugin("flz.fs.tools", "Frog Sqwad Tools", Version)]
     public class Plugin : BaseUnityPlugin
     {
-        internal const string Version = "0.1.0";
+        internal const string Version = "0.2.0";
         internal const string ExpectedProtocol = "0.0.0.1";
 
         internal readonly struct BuildInfo
