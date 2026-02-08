@@ -17,6 +17,7 @@ namespace FrogSqwadTools.LobbyList.Core
         protected readonly HashSet<GameObject> CurrentLobbies;
         protected readonly HashSet<string> OldCodes;
         protected readonly HashSet<string> NewCodes;
+        protected readonly List<string> CurrentCodes;
 
         protected readonly Text NoLobbiesTxt;
         protected readonly Text ConnectionFailedTxt;
@@ -40,6 +41,7 @@ namespace FrogSqwadTools.LobbyList.Core
             CurrentLobbies = [];
             OldCodes = [];
             NewCodes = [];
+            CurrentCodes = [];
 
             Owner.gameObject.SetActive(false);
         }
@@ -57,6 +59,19 @@ namespace FrogSqwadTools.LobbyList.Core
         {
             OnTabSetLogic();
             LobbyListManager.Instance.SetStats(CurrentLobbies.Count, NewCodes.Count);
+        }
+        internal void JoinRandom()
+        {
+            if (CurrentCodes == null || CurrentCodes.Count == 0) return;
+
+            var code = CurrentCodes[UnityEngine.Random.Range(0, CurrentCodes.Count)];
+
+            var mmm = Resources.FindObjectsOfTypeAll<MainMenuManager>().FirstOrDefault();
+            if (mmm == null) return;
+
+            mmm.OnLobbyCodeEntered(code);
+
+            LobbyListManager.Instance.ToggleList(false);
         }
     }
 }

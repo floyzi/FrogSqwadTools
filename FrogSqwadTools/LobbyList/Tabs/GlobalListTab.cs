@@ -69,6 +69,8 @@ namespace FrogSqwadTools.LobbyList.Tabs
 
             var realCode = lobby.Name + LobbyListManager.Instance.KnownRegions.GetSessionCodeCharForRegion(lobby.Region, NetworkManager.Instance._allRegions);
 
+            CurrentCodes.Add(realCode);
+
             bool isNew = OldCodes.Add(lobby.Name);
             if (isNew)
                 NewCodes.Add(lobby.Name);
@@ -106,7 +108,7 @@ namespace FrogSqwadTools.LobbyList.Tabs
                 GameObject.Destroy(item.gameObject);
 
             CurrentLobbies.Clear();
-
+            CurrentCodes.Clear();
             NewCodes.Clear();
 
             NoLobbiesTxt.gameObject.SetActive(upcoming == null || upcoming.Count == 0);

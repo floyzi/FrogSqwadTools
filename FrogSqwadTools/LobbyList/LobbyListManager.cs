@@ -69,6 +69,12 @@ namespace FrogSqwadTools.LobbyList
                 SetTabAtIndex(next);
             });
 
+            allBtns.FirstOrDefault(x => x.name == "JoinRandomBtn").onClick.AddListener(() =>
+            {
+                SFXSystem.Instance.PlayUI(SFXType.UIClick);
+                CurrentTab.JoinRandom();
+            });
+
             var allTxts = CurrentListMenu.transform.GetComponentsInChildren<Text>();
 
             StatsText = allTxts.FirstOrDefault(x => x.name == "Stats");
