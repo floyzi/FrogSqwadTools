@@ -17,7 +17,7 @@ namespace FrogSqwadTools.LobbyList
         readonly List<LobbyListTab> ListTabs;
 
         readonly Text StatsText;
-
+        readonly Text TitleText;
         internal LobbyListManager(GameObject listPrefab, GameObject item)
         {
             ListMenuPrefab = listPrefab;
@@ -54,15 +54,17 @@ namespace FrogSqwadTools.LobbyList
 
             var allTxts = CurrentListMenu.transform.GetComponentsInChildren<Text>();
 
-
+            StatsText = allTxts.FirstOrDefault(x => x.name == "Stats");
+            TitleText = allTxts.FirstOrDefault(x => x.name == "ListTitle");
 
             var allLists = CurrentListMenu.transform.GetComponentsInChildren<ScrollRect>();
             ListTabs = [];
 
-            ListTabs.Add(new GlobalListTab(allLists.FirstOrDefault(x => x.name == "GlobalList"), refrBtn, item));
+            ListTabs.Add(new GlobalListTab("Global", allLists.FirstOrDefault(x => x.name == "GlobalList"), refrBtn, item));
+            ListTabs.Add(new CustomListTab("Custom", allLists.FirstOrDefault(x => x.name == "CustomList"), refrBtn, item));
 
-            CurrentTab = ListTabs.First();
-            SetStats(0);
+            SetTabAtIndex(0);
+            SetStats(0, 0);
         }
 
         internal void ToggleList(bool state) => CurrentListMenu.SetActive(state);
@@ -70,21 +72,25 @@ namespace FrogSqwadTools.LobbyList
         internal void NextTab()
         {
             var next = (ListTabs.IndexOf(CurrentTab) + 1) % ListTabs.Count;
-            CurrentTab.Owner.gameObject.SetActive(false);
-            CurrentTab = ListTabs[next];
-            CurrentTab.Owner.gameObject.SetActive(true);
+            SetTabAtIndex(next);
         }
         internal void PreviousTab()
         {
             var prev = (ListTabs.IndexOf(CurrentTab) - 1 + ListTabs.Count) % ListTabs.Count;
-            CurrentTab.Owner.gameObject.SetActive(false);
-            CurrentTab = ListTabs[prev];
-            CurrentTab.Owner.gameObject.SetActive(true);
+            SetTabAtIndex(prev);
         }
 
-        internal void SetStats(int lobbyCount)
+        void SetTabAtIndex(int indx)
         {
+            CurrentTab?.Owner.gameObject.SetActive(false);
+            CurrentTab = ListTabs[indx];
+            CurrentTab.Owner.gameObject.SetActive(true);
+            TitleText.text = $"{CurrentTab.Name} LIST";
+        }
 
+        internal void SetStats(int lobbyCount, int newLobbies)
+        {
+            StatsText.text = $"Lobbies in list: {lobbyCount} | New lobbies: {102}";
         }
     }
 }

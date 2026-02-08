@@ -17,7 +17,7 @@ namespace FrogSqwadTools.LobbyList
     {
         NetworkRunner Runner;
         GlobalListTab Owner;
-        internal async Task Init(GlobalListTab owner)
+        internal async Task<bool> Init(GlobalListTab owner)
         {
             Owner = owner;
             Runner = owner.Owner.gameObject.AddComponent<NetworkRunner>();
@@ -29,9 +29,11 @@ namespace FrogSqwadTools.LobbyList
             Plugin.Logger.LogInfo("Connecting to photon lobby...");
 
             var auth = await NetworkManager.Instance.GetAuthenticationAsync();
-            await Runner.JoinSessionLobby(SessionLobby.ClientServer, authentication: auth);
+            var res = await Runner.JoinSessionLobby(SessionLobby.ClientServer, authentication: auth);
 
             Plugin.Logger.LogInfo("Connected to photon lobby");
+
+            return res.Ok;
         }
 
         public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) => Owner.RefreshList(sessionList);

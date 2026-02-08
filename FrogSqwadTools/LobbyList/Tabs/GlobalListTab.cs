@@ -17,11 +17,12 @@ namespace FrogSqwadTools.LobbyList.Tabs
     {
         readonly PhotonLobbyList LobbyList;
         PhotonRegionsLookup KnownRegions;
-        internal GlobalListTab(ScrollRect owner, Button refrBtn, GameObject lobby) : base(owner, refrBtn, lobby)
+        internal GlobalListTab(string name, ScrollRect owner, Button refrBtn, GameObject lobby) : base(name, owner, refrBtn, lobby)
         {
             LobbyList = new();
             _ = LobbyList.Init(this).ContinueWith(x =>
             {
+                ConnectionFailedTxt.gameObject.SetActive(!x.Result);
                 KnownRegions = Resources.FindObjectsOfTypeAll<PhotonRegionsLookup>().FirstOrDefault();
             });
         }
@@ -49,7 +50,7 @@ namespace FrogSqwadTools.LobbyList.Tabs
             CurrentLobbies.Add(newLobby);
         }
 
-        internal override void RefreshList(object upcoming)
+        protected override void RefreshListLogic(object upcoming)
         {
             foreach (var item in CurrentLobbies)
                 GameObject.Destroy(item.gameObject);

@@ -22,7 +22,7 @@ using static UnityEngine.UI.GridLayoutGroup;
 
 namespace FrogSqwadTools.LobbyList.Tabs
 {
-    [Obsolete("Replaced by global list")]
+    [Obsolete("Replaced by global list")] //...but i just cant to let it go
     internal class CustomListTab : LobbyListTab
     {
         ClientWebSocket ListSocket;
@@ -34,7 +34,7 @@ namespace FrogSqwadTools.LobbyList.Tabs
         int Lives;
         bool IsOwnedLobbyVisible;
 
-        public CustomListTab(ScrollRect owner, Button refrBtn, GameObject lobby) : base(owner, refrBtn, lobby)
+        public CustomListTab(string name, ScrollRect owner, Button refrBtn, GameObject lobby) : base(name, owner, refrBtn, lobby)
         {
             Task.Run(async () =>
             {
@@ -244,7 +244,7 @@ namespace FrogSqwadTools.LobbyList.Tabs
             CurrentLobbies.Add(newLobby);
         }
 
-        internal override void RefreshList(object upcoming)
+        protected override void RefreshListLogic(object upcoming)
         {
             foreach (var item in CurrentLobbies)
                 GameObject.Destroy(item.gameObject);
